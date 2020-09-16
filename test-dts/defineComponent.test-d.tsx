@@ -10,7 +10,8 @@ import {
   expectType,
   ComponentPublicInstance,
   ComponentOptions,
-  SetupContext
+  SetupContext,
+  h
 } from './index'
 
 describe('with object props', () => {
@@ -864,3 +865,59 @@ describe('extract instance type', () => {
   //  @ts-expect-error
   expectError((compA.baseA = 1))
 })
+
+describe('async setup', () => {
+  type GT = string & { __brand: unknown }
+  const Comp = defineComponent({
+    async setup() {
+      // setup context
+      return {
+        a: ref(1),
+        b: {
+          c: ref('hi')
+        },
+        d: reactive({
+          e: ref('hello' as GT)
+        })
+      }
+    },
+    render() {
+      // assert setup context unwrapping
+      expectType<number>(this.a)
+      expectType<string>(this.b.c.value)
+      expectType<GT>(this.d.e)
+
+      // setup context properties should be mutable
+      this.a = 2
+    }
+  })
+
+  const vm = {} as InstanceType<typeof Comp>
+  // assert setup context unwrapping
+  expectType<number>(vm.a)
+  expectType<string>(vm.b.c.value)
+  expectType<GT>(vm.d.e)
+
+  // setup context properties should be mutable
+  vm.a = 2
+})
+
+// check if defineComponent can be exported
+export default {
+  // function components
+  a: defineComponent(_ => h('div')),
+  // no props
+  b: defineComponent({
+    data() {
+      return {}
+    }
+  }),
+  c: defineComponent({
+    props: ['a']
+  }),
+  d: defineComponent({
+    props: {
+      a: Number
+    }
+  })
+}
