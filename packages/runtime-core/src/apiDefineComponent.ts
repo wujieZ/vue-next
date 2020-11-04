@@ -13,7 +13,11 @@ import {
   AllowedComponentProps,
   ComponentCustomProps
 } from './component'
-import { ExtractPropTypes, ComponentPropsOptions } from './componentProps'
+import {
+  ExtractPropTypes,
+  ComponentPropsOptions,
+  ExtractDefaultPropTypes
+} from './componentProps'
 import { EmitsOptions } from './componentEmits'
 import { isFunction } from '@vue/shared'
 import { VNodeProps } from './vnode'
@@ -27,9 +31,9 @@ export type PublicProps = VNodeProps &
   ComponentCustomProps
 
 export type DefineComponent<
-  PropsOrPropOptions = any,
-  RawBindings = any,
-  D = any,
+  PropsOrPropOptions = {},
+  RawBindings = {},
+  D = {},
   C extends ComputedOptions = ComputedOptions,
   M extends MethodOptions = MethodOptions,
   Mixin extends ComponentOptionsMixin = ComponentOptionsMixin,
@@ -37,11 +41,11 @@ export type DefineComponent<
   E extends EmitsOptions = Record<string, any>,
   EE extends string = string,
   PP = PublicProps,
-  RequiredProps = Readonly<ExtractPropTypes<PropsOrPropOptions>>,
-  OptionalProps = Readonly<ExtractPropTypes<PropsOrPropOptions, false>>
+  Props = Readonly<ExtractPropTypes<PropsOrPropOptions>>,
+  Defaults = ExtractDefaultPropTypes<PropsOrPropOptions>
 > = ComponentPublicInstanceConstructor<
   CreateComponentPublicInstance<
-    OptionalProps,
+    Props,
     RawBindings,
     D,
     C,
@@ -49,12 +53,14 @@ export type DefineComponent<
     Mixin,
     Extends,
     E,
-    PP & OptionalProps
+    PP & Props,
+    Defaults,
+    true
   > &
-    RequiredProps
+    Props
 > &
   ComponentOptionsBase<
-    RequiredProps,
+    Props,
     RawBindings,
     D,
     C,
@@ -62,7 +68,8 @@ export type DefineComponent<
     Mixin,
     Extends,
     E,
-    EE
+    EE,
+    Defaults
   > &
   PP
 
@@ -87,8 +94,8 @@ export function defineComponent<
   Props = {},
   RawBindings = {},
   D = {},
-  C extends ComputedOptions = ComputedOptions,
-  M extends MethodOptions = MethodOptions,
+  C extends ComputedOptions = {},
+  M extends MethodOptions = {},
   Mixin extends ComponentOptionsMixin = ComponentOptionsMixin,
   Extends extends ComponentOptionsMixin = ComponentOptionsMixin,
   E extends EmitsOptions = EmitsOptions,

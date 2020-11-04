@@ -41,7 +41,7 @@ export {
 } from './apiLifecycle'
 export { provide, inject } from './apiInject'
 export { nextTick } from './scheduler'
-export { defineComponent, DefineComponent } from './apiDefineComponent'
+export { defineComponent } from './apiDefineComponent'
 export { defineAsyncComponent } from './apiAsyncComponent'
 
 // Advanced API ----------------------------------------------------------------
@@ -93,6 +93,7 @@ export {
   setTransitionHooks,
   getTransitionRawChildren
 } from './components/BaseTransition'
+export { initCustomFormatter } from './customFormatter'
 
 // For devtools
 export { devtools, setDevtoolsHook } from './devtools'
@@ -166,6 +167,7 @@ export {
   ComponentCustomProps,
   AllowedComponentProps
 } from './component'
+export { DefineComponent } from './apiDefineComponent'
 export {
   ComponentOptions,
   ComponentOptionsMixin,
@@ -198,7 +200,8 @@ export {
   PropType,
   ComponentPropsOptions,
   ComponentObjectPropsOptions,
-  ExtractPropTypes
+  ExtractPropTypes,
+  ExtractDefaultPropTypes
 } from './componentProps'
 export {
   Directive,
@@ -237,7 +240,12 @@ export {
   createCommentVNode,
   createStaticVNode
 } from './vnode'
-export { toDisplayString, camelize, capitalize } from '@vue/shared'
+export {
+  toDisplayString,
+  camelize,
+  capitalize,
+  toHandlerKey
+} from '@vue/shared'
 
 // For test-utils
 export { transformVNodeArgs } from './vnode'

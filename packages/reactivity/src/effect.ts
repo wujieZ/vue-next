@@ -17,6 +17,7 @@ export interface ReactiveEffect<T = any> {
   raw: () => T
   deps: Array<Dep>
   options: ReactiveEffectOptions
+  allowRecurse: boolean
 }
 
 export interface ReactiveEffectOptions {
@@ -25,6 +26,7 @@ export interface ReactiveEffectOptions {
   onTrack?: (event: DebuggerEvent) => void
   onTrigger?: (event: DebuggerEvent) => void
   onStop?: () => void
+  allowRecurse?: boolean
 }
 
 export type DebuggerEvent = {
@@ -99,6 +101,7 @@ function createReactiveEffect<T = any>(
     }
   } as ReactiveEffect
   effect.id = uid++
+  effect.allowRecurse = !!options.allowRecurse
   effect._isEffect = true
   effect.active = true
   effect.raw = fn
@@ -178,7 +181,11 @@ export function trigger(
   const effects = new Set<ReactiveEffect>()
   const add = (effectsToAdd: Set<ReactiveEffect> | undefined) => {
     if (effectsToAdd) {
-      effectsToAdd.forEach(effect => effects.add(effect))
+      effectsToAdd.forEach(effect => {
+        if (effect !== activeEffect || effect.allowRecurse) {
+          effects.add(effect)
+        }
+      })
     }
   }
 
